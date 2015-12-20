@@ -159,4 +159,93 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 - **glLinkProgram()** 将一个程式对象上的所有着色器对象链接到一起。
 - **glDeleteShader()** 删除一个着色器对象。一旦一个着色器对象被链接到一个程式对象中之后，这个程式对象就包含了相应的二进制代码，于是相关的着色器对象就不再需要了。
 
-清单2.3和清单2.4的着色器源代码在我们的程式中被当做常量字符串传递给**glShaderSource()**函数，这个函数将这些常量字符串拷贝到我们用**glCreateShader()**创建的着色器对象中。着色器对象保存了它的源代码的一份拷贝，然后，当我们调用**glCompileShader()**时，着色器对象的GLSL源代码被编译为一种中间的二进制表示形式，它也同样被存储在着色器对象中。程式对象表示链接后会被用来进行渲染工作的可执行体。我们使用**glAttachShader()**将我们的着色器对象附加到程式对象上，然后调用**glLinkProgram()**将所有着色器对象链接到可被图形处理器运行的代码中。将一个着色器对象附加到一个程式对象上会创建一个到着色器对象的引用，然后我们可以删除这个着色器对象，因为这个程式对象在它需要的情况下会把持这个着色器对象的内容。清单2.5中的`compile_shaders`函数新创建的程式对象。当我们调用这个函数后我们需要将返回的程式对象在某个地方保存下来，这样我们就可以用它来绘图。同时，我们也不会想每次想用到这个程式对象的时候都对它进行重新编译。所以，我们需要一个程式启动时会且只会被调用一次的函数。*sb7*应用框架提供这样一个函数: `application::startup()`，我们可以在我们的示例应用中覆盖它来完成所有一次性设置的工作。。
+清单2.3和清单2.4的着色器源代码在我们的程式中被当做常量字符串传递给**glShaderSource()**函数，这个函数将这些常量字符串拷贝到我们用**glCreateShader()**创建的着色器对象中。着色器对象保存了它的源代码的一份拷贝，然后，当我们调用**glCompileShader()**时，着色器对象的GLSL源代码被编译为一种中间的二进制表示形式，它也同样被存储在着色器对象中。程式对象表示链接后会被用来进行渲染工作的可执行体。我们使用**glAttachShader()**将我们的着色器对象附加到程式对象上，然后调用**glLinkProgram()**将所有着色器对象链接到可被图形处理器运行的代码中。将一个着色器对象附加到一个程式对象上会创建一个到着色器对象的引用，然后我们可以删除这个着色器对象，因为这个程式对象在它需要的情况下会把持这个着色器对象的内容。清单2.5中的`compile_shaders`函数新创建的程式对象。当我们调用这个函数后我们需要将返回的程式对象在某个地方保存下来，这样我们就可以用它来绘图。同时，我们也不会想每次想用到这个程式对象的时候都对它进行重新编译。所以，我们需要一个程式启动时会且只会被调用一次的函数。*sb7*应用框架提供这样一个函数: `application::startup()`，我们可以在我们的示例应用中覆盖它来完成所有一次性的设置工作。
+
+在我们可以绘制任何东西之前尚有一事需要处理，创建一个*顶点集对象(vertex array object - VAO)*，这个对象表现了OpenGL管线的顶点获取阶段并且用来给顶点着色器提供输入数据。现在我们的顶点着色器没有任何输入，我们不需要对VAO做什么。然而，我们还是需要创建VAO，这样OpenGL才会允许我绘图。我们调用OpenGL函数**glCreateVertexArrays()**来创建VAO，使用**glBindVertexArray()**将其附加到我们的上下文(context)中(译者注: **glCreateVertexArray()**函数从OpenGL 4.5才可用，笔者使用**glGenVertexArrays()**来进行实做)。它们的原型如下:
+
+    void glCreateVertexArrays(GLsizei n, GLuint* arrays);
+    
+    void glGenVertexArrays(GLsizei n, GLuint* arrays);
+    
+    void glBindVertexArray(GLuint array);
+    
+顶点集对象维护了OpenGL管线输入数据的所有相关状态。我们在`startup()`函数中加入对**glCreateVertexArrays()**和**glBindVertexArray()**的调用。随着我们对OpenGL进行更多的学习我们将会熟悉这一模式。在OpenGL中很多东西都是用对象(objects)来表达的(比如顶点集对象)。我们用一个创建函数(比如**glCreateVertexArrays()**)来创建对象，并且用一个绑定函数(比如**glBindVertexArray()**)来绑定它们使得OpenGL知道我们想在上下文中使用它们。
+
+清单2.6 创建成员变量:
+
+    class my_application : public sb7::application
+    {
+    public:
+        // <snip>
+        
+        void startup()
+        {
+            rendering_program = compile_shaders();
+            glCreateVertexArrays(1, &vertex_array_object);
+            glBindVertexArray(vertex_array_object);
+        }
+        
+        void shutdown()
+        {
+            glDeleteVertexArrays(1, &vertex_array_object);
+            glDeleteProgram(rendering_program);
+            glDeleteVertexArrays(1, &vertex_array_object);
+        }
+        
+    private:
+        GLuint rendering_program;
+        GLuint vertex_array_object;
+    };
+
+在清单2.6中，我们覆盖了`sb7::application`类的`startup()`成员函数并将我们自己的初始化代码放进去。再次提醒一下，和`render()`成员函数一样，`startup()`成员函数在`sb7::application`中被定义为一个空的虚函数(virtual function)并且在`run()`函数中被自动调用。我们在`startup()`汉中调用`compile_shaders`并将返回的程式对象存储到我们的应用类的`rendering_program`成员变量中。当我们的应用运行完成后，我们应当将这些资源清理干净。所以我们还覆盖了`shutdown()`成员函数，在其中删除掉我们在启动时创建的程式对象。一如我们使用完着色器对象后调用**glDeleteShader()**，我们在使用完程式对象后调用**glDeleteProgram()**。在我们的`shutdown()`函数中，我们还删除掉在`startup()`中创建的顶点集对象。
+
+现在我们有了一个程式，我们需要在里面执行着色器并开始在显示屏上实际绘制些什么。我们修改之前的`render()`函数，调用**glUseProgram()**来指示OpenGL使用我们的程式对象进行渲染，然后再调用我们的第一个绘图命令: **glDrawArrays()**。更新过的代码如清单2.7:
+
+清单2.7 渲染一个点:
+
+    // Our rendering function
+    void render(double currentTime)
+    {
+        const GLfloat color[] = { (float)sin(currentTime) * 0.5f + 0.5f,
+                                  (float)cos(currentTime) * 0.5f + 0.5f,
+                                  0.0f, 1.0f };
+        glClearBufferfv(GL_COLOR, 0, color);
+        
+        // Use the program object we created earlier for rendering
+        glUseProgram(rendering_program);
+        
+        // Draw one point
+        glDrawArrays(GL_POINTS, 0, 1);
+    }
+
+**glDrawArrays()**函数将顶点发送到OpenGL管线。它的原型为:
+
+    void glDrawArrays(GLenum mode, Glint first, GLsizei count);
+    
+每一个顶点都会经过顶点着色器(就像清单2.3中的那个)的洗礼。**glDrawArrays()**的第一个参数是`mode`，这个参数指示OpenGL我们想要渲染何种图元。因为我们只想绘制一个点，所以本例中我们指定为`GL_POINTS`。第二个参数`first`跟本例无关，我们设置为0就好了。最后一个参数是我们要渲染的顶点的个数。一个点用一个顶点表示，所以我们指示OpenGL只渲染一个顶点，于是我们看到一个点被渲染出来。程式的运行结果如图示2.2。
+
+图示2.2 渲染一个点:
+
+![figure2.2](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.2.png)
+
+眼睛睁大大，可以看到窗体的正中间有一个小点。恭喜，我们已经完成了我们的第一个OpenGL渲染。尽管它不是很令人印象深刻，但它为我们之后进行更有趣的渲染打好了基础并它证明了我的应用框架和我们的简单的着色器可以正常工作。
+
+为了让上面的点更加容易看到一点，我们可以让OpenGL绘制一个比单个像素要大一些的点。我们可以用**glPointSize()**函数来达成这个目的，它的原型为:
+
+    void glPointSize(GLfloat size);
+
+这个函数将点的直径设置为`size`个像素。绘制点的最大直径值是由OpenGL实现定义的。我们以后会深入这个话题和OpenGL常用功能之外的话题，但现在让我们依赖于一个事实，OpenGL保证最大支持的点得尺寸至少为64像素。将如下代码
+
+    glPointSize(40.0f);
+    
+添加到清单2.7的渲染函数中，我们即设置点得直径为40像素了。输出结果如图示2.3。
+
+图示2.3 绘制一个大一些的点:
+
+![figure2.3](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.2.png)
+
+译者大注:
+
+本书译版示例代码: [github](https://github.com/shawhen/sb7examples.git)。
+
+正如译者在第二章前奏中描述的一样，译者的机器上搭载的OpenGL最高规格为4.1版本，所以译者的代码都以OpenGL 4.1实做，但传达的思想我们应当能融会贯通。
