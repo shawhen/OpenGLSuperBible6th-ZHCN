@@ -242,7 +242,7 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 
 图示2.3 绘制一个大一些的点:
 
-![figure2.3](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.2.png)
+![figure2.3](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.3.png)
 
 译者大注:
 
