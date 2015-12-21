@@ -249,3 +249,48 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 本书译版示例代码: [github](https://github.com/shawhen/sb7examples.git)。
 
 正如译者在第二章前奏中描述的一样，译者的机器上搭载的OpenGL最高规格为4.1版本，所以译者的代码都以OpenGL 4.1实做，但传达的思想我们应当能融会贯通。
+
+## 绘制我们的第一个三角形
+仅仅只是绘制一个很大的点并不是很带劲--我们已经提到过，OpenGL支持很多不同类型的图元，其中最重要的是点、线和三角形。在我们的玩具示例中我们将`GL_POINTS`传给**glDrawArrays()**函数，从而绘制了一个点。我们真正想要绘制的是线和三角形。你可能已经猜到，我们可以将`GL_LINES`或者`GL_TRIANGLES`传给**glDrawArrays()**，但有一个问题存在: 清单2.3中的顶点着色器将每一个顶点都放在裁剪空间的中间。对于绘制顶点来说，OpenGL为我们给点设置区域是挺好的。但对于线或者三角形来说，两个或者多个顶点放在同样的地方会导致*图元退化(degenerate primitive)*，一个零长度的线或者零面积的三角形。如果我们试着用这个着色器绘制除了点之外的任何东西，我们不会得到任何输出，因为所有的图元都退化(degenerate)了。要修正这个问题，我们需要修改顶点着色器使得它为每个顶点设置不同的位置。
+
+幸运的是GLSL的顶点着色器包含一个名为`gl_VertexID`的特殊输入，它是着色器运行时正在被处理的顶点的索引。`gl_VertexID`输入值从**glDrawArrays()**的`first`参数开始计数并且每次向上计一个顶点直到`count`参数个顶点。`gl_VertexID`输入是GLSL提供的众多内置变量的其中一个，内置变量表示由OpenGL生成或者我们要在着色器中生成传给给OpenGL的数据。我们前面提到过的`gl_Position`也是一个内置变量。我们可以使用索引`gl_VertexID`来给每个顶点赋予不同的位置，下示清单2.8。
+
+清单2.8 在一个顶点着色器中生成多个顶点:
+
+    #version 450 core
+    
+    void main(void)
+    {
+        // Declare a hard-coded array of positions
+        const vec4 vertices[3] = vec4[3](vec4(0.25, -0.25, 0.5, 1.0), vec4(-0.25, -0.25, 0.5, 1.0), vec4(0.25, 0.25, 0.5, 1.0));
+        
+        // Index into our array using gl_VertexID
+        gl_Position = vertices[gl_VertexID];
+    }
+    
+使用清单2.8中的着色器，我们即可基于每个顶点`gl_VertexID`的值而赋予不同的位置。数组`vertices`中的点构成一个三角形，并且我们将渲染函数中传给**glDrawArrays()**的`GL_POINTS`更变为`GL_TRIANGLES`，如清单2.9所示。
+
+清单2.9 渲染一个三角形:
+
+    //Our rendering function
+    void render(double currentTime)
+    {
+        const GLfloat color[] = { 0.0f, 0.2f, 0.0f, 1.0f };
+
+        glClearBufferfv(GL_COLOR, 0, color);
+        
+        // Use the program object we created earlier for rendering
+        glUseProgram(rendering_program);
+        
+        // Draw one triangle
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+    
+终得如下图像:
+
+图示2.4 我们的第一个刚起步的OpenGL三角形:
+
+![figure2.4](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.4.png)
+
+## 总结
+本章我们大致了解了我们的第一个OpenGL程式的构成。我们很快就会了解到如何从应用中向着色器传递数据，如何传递我们的输入到顶点着色器中，如何在着色器阶段间传递数据，等等。在本章，我们简要介绍了*sb7*应用框架，编译一个着色器，清除窗体以及绘制点和三角形。我们还看到如何使用**glPointSize()**函数来设置点的大小以及第一个绘图命令--**glDrawArrays()**。
