@@ -38,7 +38,7 @@
 	
 图示2.1
 
-![figure 1.2](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.1.png)
+![figure 2.1](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible7th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.1.png)
 
 清单2.1所示的示例简单地将整个主窗口清除为红色。这引入我们的第一个OpenGL函数: `glClearBufferfv()`。这个函数的原型为:
 
@@ -226,7 +226,7 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 
 图示2.2 渲染一个点:
 
-![figure2.2](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.2.png)
+![figure2.2](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible7th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.2.png)
 
 眼睛睁大大，可以看到窗体的正中间有一个小点。恭喜，我们已经完成了我们的第一个OpenGL渲染。尽管它不是很令人印象深刻，但它为我们之后进行更有趣的渲染打好了基础并它证明了我的应用框架和我们的简单的着色器可以正常工作。
 
@@ -242,7 +242,7 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 
 图示2.3 绘制一个大一些的点:
 
-![figure2.3](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.3.png)
+![figure2.3](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible7th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.3.png)
 
 译者大注:
 
@@ -290,7 +290,7 @@ OpenGL着色器使用一种叫做OpenGL着色语言(OpenGL Shading Language)的�
 
 图示2.4 我们的第一个刚起步的OpenGL三角形:
 
-![figure2.4](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible6th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.4.png)
+![figure2.4](https://raw.githubusercontent.com/shawhen/OpenGLSuperBible7th-ZHCN/master/%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/figures/figure2.4.png)
 
 ## 总结
 本章我们大致了解了我们的第一个OpenGL程式的构成。我们很快就会了解到如何从应用中向着色器传递数据，如何传递我们的输入到顶点着色器中，如何在着色器阶段间传递数据，等等。在本章，我们简要介绍了*sb7*应用框架，编译一个着色器，清除窗体以及绘制点和三角形。我们还看到如何使用**glPointSize()**函数来设置点的大小以及第一个绘图命令--**glDrawArrays()**。
